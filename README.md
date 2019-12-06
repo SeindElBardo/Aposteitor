@@ -1,2 +1,4 @@
 # Aposteitor
-Framework para gestionar apuestas y ejecutable para consola y TelegramBot
+Framework para gestión de apuestas que incluye generación de apuestas automáticas.
+
+Permite apuestas a ganador, colocado, tercero y apuestas combinadas de tripleta.

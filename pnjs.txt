@@ -1,3 +1,4 @@
+Name;Average;Variance
 Hoffman;15;0.5
 Gorotima;5;0.5
 Alexander;3;0.5
