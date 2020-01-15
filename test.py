@@ -14,10 +14,7 @@ dianaI = app.Competitor("DianaIncognito")
 #Los incluimos en una ronda
 ronda = app.Round()
 ronda.loadPNJs()
-ronda.add_competitor(gala)
-ronda.add_competitor(galaI)
-ronda.add_competitor(diana)
-ronda.add_competitor(dianaI)
+ronda.add_competitors([gala, galaI, diana, dianaI])
 print (pepe.__dict__,jose.__dict__,tetona.__dict__)
 
 ronda.register_simple_bet(pepe, 10, gala, 1)
@@ -55,6 +52,6 @@ if ronda.triplet_pot == (330):
     print("triple_pot SUCCESSFUL")
 if ronda.triplet_jackpot == (210):
     print("triple_jackpot SUCCESSFUL")
-ronda.distribute_prize([gala])
+print(ronda.distribute_prize([gala]))
 
 print (pepe.__dict__,jose.__dict__,tetona.__dict__)

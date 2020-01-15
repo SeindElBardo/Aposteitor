@@ -1,19 +1,19 @@
-def simple_bet(apostador, cantidad, beneficiario, bet_type):
+def simple_bet(bettor, amount, beneficiaries, bet_type):
     if bet_type == 1:
         bet_type = "Ganador"
     elif bet_type == 2:
         bet_type = "Colocado"
     elif bet_type == 3:
         bet_type = "Tercero"
-    return (apostador + " ha apostado " + cantidad + " monedas de oro por " + beneficiario + " en calidad de " + bet_type)
+    return (bettor + " ha apostado " + amount + " monedas de oro por " + beneficiaries + " en calidad de " + bet_type)
 
-def composite_bet(apostador, cantidad, beneficiarios):
-    return ("{} ha apostado {} monedas de oro a la tripleta 1-{}, 2-{}, 3-{}".format(apostador, cantidad, beneficiarios[0], beneficiarios[1], beneficiarios[2]))
+def composite_bet(bettor, amount, beneficiaries):
+    return ("{} ha apostado {} monedas de oro a la tripleta 1-{}, 2-{}, 3-{}".format(bettor, amount, beneficiaries[0], beneficiaries[1], beneficiaries[2]))
 
 total_report = "Los resultados han sido:\n\n"
 
-def report_bet_for(nombre):
-    return ("Apuestas por " + nombre)
+def report_bet_for(name):
+    return ("Apuestas por {}:\n\n".format(name))
 
-def report_bets_results(apostador, premio):
-    return ("\t" + apostador + " ha ganado " + premio + " monedas de oro\n")
+def report_bets_results(bettor, prize):
+    return ("\t" + bettor + " ha ganado " + prize + " monedas de oro\n")
