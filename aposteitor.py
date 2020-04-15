@@ -382,8 +382,8 @@ class Round():
             event_type {String} -- Name of the event that has been executed
             args {Truple} -- Tuple with arguments used in the instruction that has been executed
         """
-        log_file = open(str(self.id) + ".log", "a+")
-        apt_file = open(str(self.id) + ".apt", "a+")
+        log_file = open("./report/{}.log".format(str(self.id)), "a+")
+        apt_file = open("./report/{}.apt".format(str(self.id)), "a+")
         if event_type == "new_round":
             log_file.write(text.log_new_round(args))
         elif event_type == "add_competitor":
@@ -410,13 +410,6 @@ class Round():
 # APT files
 def load_apt(file, npcs_bets, generates_log = False):
     """Loads an apt
-    
-    :param      file:           The file
-    :type       file:           String
-    :param      npcs_bets:      The amount of npcs_bets
-    :type       npcs_bets:      Integer
-    :param      generates_log:  Normaly the logs exits already. If this param is True, makes it again.
-    :type       generates_log:  boolean
     
     A apt file contains the information necessary to simulate a round.
     This can be used to generate a betting round from another application or manually and run in aposteitor after.
@@ -469,4 +462,4 @@ def load_apt(file, npcs_bets, generates_log = False):
     reply = simulation.distribute_prize(winners)
     print(reply)
     if(not generates_log):
-        log_file = remove(str(simulation.id) + ".log")
+        log_file = remove("./report/{}.log".format(str(simulation.id)))

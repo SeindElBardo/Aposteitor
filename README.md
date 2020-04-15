@@ -8,7 +8,7 @@ In a tabletop RPG, characters would have the opportunity to participate in vario
 To enrich this part of the session, we wanted to allow the not participate characters  in any of the tournaments that could place bets, and so that the only money that was moved not outside the players, functions were also allow with which to define non-player characters who will also place bets.
 
 
-# Functions
+## Functions
 Aposteitor provides structures and functions with which to create betting rounds in which you can bet on one or more of the competitors. It is only necessary to establish the names of the participants of the competition. Users can place bets on who is going to win, or bets on winner, placed, third and triplets in case there are enough participants.
 
 
