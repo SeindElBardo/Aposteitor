@@ -1,8 +1,8 @@
-par_simple_npcs_bets              = 0.7
-par_tax_for_simple_bet            = 0
-par_tax_for_composite_bet         = 0
-par_round_coins                   = True
+SIMPLE_NPCS_BETS              = 0.7
+TAX_FOR_SIMPLE_BET            = 0
+TAX_FOR_COMPOSITE_BET         = 0
+ROUND_COINS                   = True
 
-par_effective_ratio_in_winner_bet = 1.0
-par_effective_ratio_in_placed_bet = 0.7
-par_effective_ratio_in_third_bet  = 0.4
+EFFECTIVE_RATIO_IN_WINNER_BET = 1.0
+EFFECTIVE_RATIO_IN_PLACED_BET = 0.7
+EFFECTIVE_RATIO_IN_THIRD_BET  = 0.4

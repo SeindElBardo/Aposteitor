@@ -12,27 +12,40 @@ class Player(): # Called bettor on majority of variables
         self.name = name
         self.money = self.initial_money = money
 
+
     def move_money(self, amount):
-        """
-        Update players' money when they bet.
-        If it is not possible, raise an exception.
+        """Increase amount of money.
         
-        :param      amount:  The amount
-        :type       amount:  Double
+        Change the player's amount of money by increasing or decreasing according to the specified amount.
+        If this change causes the player's money to be less that 0, raises a ValueError.
+        
+        Arguments:
+            amount {Integer} -- Amount that is added to the real money of the players
+        
+        Raises:
+            ValueError -- The final money don't be lower than 0
         """
         if (self.money + amount) >= 0:
             self.money = round(self.money + amount, 2) # It is always rounded to avoid problems of arithmetic operations with floats
         else:
             raise ValueError("{} no tiene suficientes fondos como para hacer la apuesta. Actualmente sólo tiene {} pos".format(self.name, self.money))
 
+
     def bet(self, amount, bet_type):
-        """
-        Build a bet.
+        """Builds a bet.
         
-        :param      amount:      The amount
-        :type       amount:      Double
-        :param      bet_type:    The type of the bet (1 = winner, 2 = placed, 3 = third or <list of three Competitor> = triplet)
-        :type       bet_type:    Int or list of three Competitor
+        Instances a Bet object according to the specified amount and the bet type. 
+        
+        Arguments:
+            amount {[Double]} -- The amount
+            bet_type {Int or list of three Competitor} -- The type of the bet (1 = winner, 2 = placed, 3 = third or <list of three Competitor> = triplet)
+        
+        Returns:
+            Bet -- Instance of the amount and type bet specified 
+        
+        Raises:
+            ValueError -- amount must must at least 1
+            TypeError -- type_bet must be a number between 1 and 4
         """
         if amount < 1:
             raise ValueError("Las apuestas deben ser de al menos un po") 
@@ -49,10 +62,15 @@ class Player(): # Called bettor on majority of variables
 
 
     def results(self):
-        """
-        Show the difference between the start money and the end money
+        """Calculates the difference between the start money and the end money.
+        
+        Calculates the difference between the start money and the end money.
+        
+        Returns:
+            Double -- Difference between the start money and the end money
         """
         return self.money - self.initial_money
+
 
 class Npc(Player): # Para que no explote
     def __init__(self, name, average, variance, money = float("inf")):
@@ -60,44 +78,56 @@ class Npc(Player): # Para que no explote
         self.average = average
         self.variance = variance
 
+
     def generate_amount(self):
-        """
+        """Generates a amount with a function.
+        
         All pngs generating their amount for bet with a normal function.
+        
+        Returns:
+            Integer -- amount for a bet
         """
+        
         amount = math.ceil(random.normalvariate(self.average, self.variance))
         if amount < 1:
             return 1
         return amount
 
+
 class Competitor():
     def __init__(self, name):
         self.name = name
         self.bets = []
-                        
+
+
 class Bet():
     def __init__(self, bettor, amount):
         self.bettor = bettor
         self.amount = amount
         self.effective_amount = self.amount
 
+
 # It may be a bad idea to use different classes
 class BetWinner(Bet):
     def __init__(self, bettor, amount):
         super(BetWinner, self).__init__(bettor, amount)
-        self.effective_amount = self.amount * config.par_effective_ratio_in_winner_bet
+        self.effective_amount = self.amount * config.EFFECTIVE_RATIO_IN_WINNER_BET
         self.type = 1
+
 
 class BetPlaced(Bet):
     def __init__(self, bettor, amount):
         super(BetPlaced, self).__init__(bettor, amount)
-        self.effective_amount = self.amount * config.par_effective_ratio_in_placed_bet
+        self.effective_amount = self.amount * config.EFFECTIVE_RATIO_IN_PLACED_BET
         self.type = 2
+
 
 class BetThird(Bet):
     def __init__(self, bettor, amount):
         super(BetThird, self).__init__(bettor, amount)
-        self.effective_amount = self.amount * config.par_effective_ratio_in_third_bet
+        self.effective_amount = self.amount * config.EFFECTIVE_RATIO_IN_THIRD_BET
         self.type = 3
+
 
 class BetTriplet(Bet):
     def __init__(self, bettor, amount, triplet):
@@ -123,12 +153,17 @@ class Round():
         self.triplet_jackpot = 0.0 # It is necessary to obtain the proportion of the jackpot 
         self.triplet_winner_bets = []
 
+
     def exist_competitors(self, competitors):
-        """
-        Evaluates if some one of competitors within in the competitor's list given is already added in competitor's list of the round.
+        """Checks if a competitor exits already.
         
-        :param      competitors:  The competitors
-        :type       competitors:  List of Competitor. It's a list for convenience of a register_composite_bet function
+        Evaluates if some one of competitors within in the competitor's list given is already added in competitor's list of the round.
+                
+        Arguments:
+            competitors {List of Competitor} -- It's a list for convenience of a register_composite_bet function
+        
+        Returns:
+            bool -- True if competitor is in list
         """
         for competitor in competitors:
             if competitor in self.competitors.values() or competitor.name in self.competitors.keys():
@@ -136,14 +171,18 @@ class Round():
         return False
 
     def get_competitor_by_name(self, name):
-        """
-        Gets the competitor by name.
+        """Gets a object competitor with the name.
         
-        :param      name:  The name
-        :type       name:  String
-
-        :returns:   The competitor
-        :rtype:     Competitor
+        Gets the competitor by name from competitors list.
+        
+        Arguments:
+            name {String} -- Value in name atribute.
+        
+        Returns:
+            Competitor -- Competitor object which name is the specified in param
+        
+        Raises:
+            ReferenceError -- Raises if don't exists a competitor with the specified name in the list
         """
         if name in self.competitors.keys():
             return self.competitors[name]
@@ -151,12 +190,19 @@ class Round():
 
 
     def add_competitors(self, competitors): ## Comprobar si se puede meter un participante en blanco o una lista
-        """
+        """Adds one o many competitors to list.
+        
         Adds competitors to list of the round. If the parameter competitors  is only the names, instantiates competitors objets before.
         Each competitor must have a different name and cannot be added more than once.
         
         :param      competitors:  The competitors
         :type       competitors:  List of Competitor or list of Strings
+        
+        Arguments:
+            competitors {list of Competitor or list of Stings} -- List with competitors objects or names to add
+        
+        Raises:
+            NameError -- Don't exists a competitor with these name
         """
         if type(competitors[0]) is str:
             for competitor_name in competitors:
@@ -174,20 +220,21 @@ class Round():
 
 
     def register_simple_bet(self, bettor, amount, competitor, bet_type):
-        """
+        """Add a simple bet to list of bets.
+        
         Build a simple bet and registres it in the pool of bets of the round.
         
-        :param      bettor:      The bettor
-        :type       bettor:      Player
-        :param      amount:      The amount
-        :type       amount:      Double
-        :param      competitors: The competitor
-        :type       competitors: Competitor
-        :param      bet_type:    The bet_type
-        :type       bet_type:    Integer 1-3
-
-        :returns:   Susccessful text
-        :rtype:     String
+        Arguments:
+            bettor {Player} -- Player that does the bet
+            amount {Integer} -- Amount of money beted
+            competitor {Competitor} -- Competitor by the which does the bet
+            bet_type {Integer} -- Number that identifys the bet type
+        
+        Returns:
+            String -- Susccessful
+        
+        Raises:
+            ReferenceError -- Competitor don't exist
         """
         if not self.exist_competitors([competitor]):
             raise ReferenceError("El competidor por el que se realiza la apuesta no está participando en esta ronda")
@@ -198,19 +245,22 @@ class Round():
 
 
     def register_composite_bet(self, bettor, amount, competitors):
-        """
+        """Add a simple bet to list of bets.
+        
         Build a composite bet (triplet) and registres it in the pool of bets of the round.
         
-        :param      bettor:       The bettor
-        :type       bettor:       Player
-        :param      amount:       The amount
-        :type       amount:       Double
-        :param      competitors:  The competitors
-        :type       competitors:  List of three Competitors
-
-        :returns:   Susccessful text
-        :rtype:     String
+        Arguments:
+            bettor {Player} -- Player that does the bet
+            amount {Integer} -- Amount of money beted
+            competitor {Competitor} -- Competitor by the which does the bet
+        
+        Returns:
+            String -- Susccessful
+        
+        Raises:
+            ReferenceError -- Competitor don't exist
         """
+        
         if not self.exist_competitors(competitors):
             raise ReferenceError("Uno o varios de los competidores por los que se realiza la apuesta no están participando en esta ronda")
         self.triplet_bets.append(bettor.bet(amount, competitors))
@@ -220,11 +270,12 @@ class Round():
 
 
     def proclaim_winner(self, winners):
-        """
-        Prepare the jackpots for distribute the prize.
+        """Set the winners of the current round.
         
-        :param      winners:  The winners
-        :type       winners:  List of Competitors
+        Set the winners of the current round preparing the jackpots for distribute the prize.
+        
+        Arguments:
+            winners {List of competitors} -- List of Competitors objects
         """
         winner_index = 0
         while winner_index < len(winners): # Simple bets
@@ -241,15 +292,16 @@ class Round():
 
 
     def distribute_prize(self, winners):
-        """
+        """Distribute the gains to the bettors.
+        
         Updates the bettors money with the prize obtained (is necessary to call proclaim winner function before).
         The house gains the money don't reparted.
         
-        :param      winners:  The winners
-        :type       winners:  List of one or three Competitors
-
-        :returns:   Reports the prizes
-        :rtype:     String
+        Arguments:
+            winners {List of one or theree Competitors} -- Competitors objects which are the winners of the current round
+        
+        Returns:
+            String -- Text with the prizes
         """
         report = text.total_report
         gains_for_house = self.pot + self.triplet_pot
@@ -261,7 +313,7 @@ class Round():
             for bet in winners[winner_index].bets:
                 if bet.type > winner_index:
                     prize = math.floor(bet.effective_amount*proportion_simple_bets*100)/100
-                    if config.par_round_coins:
+                    if config.ROUND_COINS:
                         prize = int(prize)
                     bet.bettor.move_money(prize)
                     gains_for_house = round(gains_for_house - prize, 2)
@@ -273,7 +325,7 @@ class Round():
             for bet in self.triplet_winner_bets:
                 report += text.report_bet_for(bet.bettor.name)
                 prize = math.floor(bet.effective_amount*proportion_triplet_bets*100)/100
-                if config.par_rounds_coins:
+                if config.ROUNDS_COINS:
                         prize = int(prize)
                 bet.bettor.move_money(prize)
                 gains_for_house = round(gains_for_house - prize, 2)
@@ -283,8 +335,9 @@ class Round():
         return report
 
     def load_npcs(self):
-        """
-        Loads npcs so they can bet.
+        """Loads npcs from npcs.txt file.
+        
+        Loads npcs so they can bet. The file <npcs.txt> conteins tuples <name;average;variance> that this function reads and used to instance Npc objects.
         """
         try:
             file_handle = open("./npcs.txt", "r")
@@ -301,16 +354,17 @@ class Round():
 
 
     def generate_padding_bets(self, amount):
-        """
-        Generate the indicated amount of bets.
+        """Generate the indicated amount of bets.
         
-        :param      amount:  The amount
-        :type       amount:  Integer
+        So bets don't be makes only by users, this function generate x (where x = <amount>) bets used the npcs loaded previously.
+        
+        Arguments:
+            amount {Integer} -- Amount of bets makes by npcs
         """
         competitors = list(self.competitors.values())
         for x in range(amount):
             npc = random.choice(self.npcs)
-            if random.random() < config.par_simple_npcs_bets:
+            if random.random() < config.SIMPLE_NPCS_BETS:
                 self.register_simple_bet(npc, npc.generate_amount(), random.choice(competitors), random.randrange(1,4))
             else:
                 random.shuffle(competitors)
@@ -320,6 +374,14 @@ class Round():
 
 ## LOGs 
     def register_event(self, event_type, args):
+        """Write log line.
+        
+        Whenever an event occurs that generates changes in the current round, this function registe that event. A special line is also builded that is written to an .apt file that can later be loaded to execute a round identical to the current one.
+        
+        Arguments:
+            event_type {String} -- Name of the event that has been executed
+            args {Truple} -- Tuple with arguments used in the instruction that has been executed
+        """
         log_file = open(str(self.id) + ".log", "a+")
         apt_file = open(str(self.id) + ".apt", "a+")
         if event_type == "new_round":
@@ -347,8 +409,7 @@ class Round():
 
 # APT files
 def load_apt(file, npcs_bets, generates_log = False):
-    """
-    Loads an apt 
+    """Loads an apt
     
     :param      file:           The file
     :type       file:           String
@@ -356,6 +417,21 @@ def load_apt(file, npcs_bets, generates_log = False):
     :type       npcs_bets:      Integer
     :param      generates_log:  Normaly the logs exits already. If this param is True, makes it again.
     :type       generates_log:  boolean
+    
+    A apt file contains the information necessary to simulate a round.
+    This can be used to generate a betting round from another application or manually and run in aposteitor after.
+    It also allows a previous round to be run again with the apt file generated when that round was run.
+    
+    Arguments:
+        file {String} -- File's name
+        npcs_bets {Integer} -- Amount of new npcs bets to generate for execution
+    
+    Keyword Arguments:
+        generates_log {bool} -- If True, a new log file is generated (default: {False})
+    
+    Raises:
+        EnvironmentError -- The file doesn't exist in current directory
+        EnvironmentError -- The number of the winners is inconsistent
     """
     # Makes Round and adds competitors
     try:
