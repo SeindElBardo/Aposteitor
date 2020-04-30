@@ -1,5 +1,7 @@
 import time
-
+import os
+import pathlib
+print(os.getcwd())
 def simple_bet(bettor, amount, beneficiaries, bet_type):
     if bet_type == 1:
         bet_type = "Ganador"
@@ -44,7 +46,10 @@ def log_add_composite_bet(bettor_name, amount, beneficiarie_name):
     return "[{}]\t created new composite bet: {}, {}, {} {} {}, {}\n".format(time.strftime("%d/%m/%y - %H:%M:%S"), bettor_name, amount, beneficiarie_name[0], beneficiarie_name[1], beneficiarie_name[2], 4)
 
 
-def log_proclaim_winner(winners_names):
+def log_proclaim_winner(winner_name):
+    return "[{}]\t proclaimed the following winner: {}\n".format(time.strftime("%d/%m/%y - %H:%M:%S"), winner_name)
+
+def log_proclaim_winners(winners_names):
     return "[{}]\t proclaimed the following winners: {}, {}, {}\n".format(time.strftime("%d/%m/%y - %H:%M:%S"), winners_names[0], winners_names[1], winners_names[2])
 
 

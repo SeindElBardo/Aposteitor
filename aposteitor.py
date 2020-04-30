@@ -1,11 +1,12 @@
 import os
 import pathlib
-os.chdir(pathlib.Path(__file__).parent.absolute())
 import random
 import math
 import time
-import text
-import config
+from . import text
+from . import config
+
+LOCAL_PATH = pathlib.Path(__file__).parent.absolute()
 
 class Player(): # Called bettor on majority of variables
     def __init__(self, name, money):
@@ -340,16 +341,17 @@ class Round():
         Loads npcs so they can bet. The file <npcs.txt> conteins tuples <name;average;variance> that this function reads and used to instance Npc objects.
         """
         try:
-            file_handle = open("./npcs.txt", "r")
-        except:     
-            file_handle = open("npcs.txt", "w")
+            file_handle = open("{}/npcs.txt".format(LOCAL_PATH), "r")
+        except:
+            file_handle = open("{}/npcs.txt".format(LOCAL_PATH), "w")
             file_handle.close()
             return
         npcs_list = file_handle.readlines()[1:] # Remove first line (headers)
         for npc in npcs_list:
             npc = npc[:-1] # Remove line break
             npc_atributes = npc.split(';')
-            self.npcs.append(Npc(npc_atributes[0], int(npc_atributes[1]), float(npc_atributes[2])))
+            self.npcs.append(Npc(npc_atributes[0], int(npc_atributes[1]),
+                            float(npc_atributes[2])))
             file_handle.close()
 
 
@@ -364,11 +366,19 @@ class Round():
         competitors = list(self.competitors.values())
         for x in range(amount):
             npc = random.choice(self.npcs)
-            if random.random() < config.SIMPLE_NPCS_BETS:
-                self.register_simple_bet(npc, npc.generate_amount(), random.choice(competitors), random.randrange(1,4))
+            if len(competitors) == 2: # Only winner bet is possible
+                self.register_simple_bet(npc, npc.generate_amount(),
+                                        random.choice(competitors), 1)
             else:
-                random.shuffle(competitors)
-                self.register_composite_bet(npc, npc.generate_amount(), [competitors[0], competitors[1], competitors[2]])
+                if random.random() < config.SIMPLE_NPCS_BETS:
+                    self.register_simple_bet(npc, npc.generate_amount(),
+                                        random.choice(competitors),
+                                        random.randrange(1,4))
+                else:
+                    random.shuffle(competitors)
+                    self.register_composite_bet(npc, npc.generate_amount(),
+                                                [competitors[0], competitors[1],
+                                                competitors[2]])
 
 
 
@@ -382,8 +392,8 @@ class Round():
             event_type {String} -- Name of the event that has been executed
             args {Truple} -- Tuple with arguments used in the instruction that has been executed
         """
-        log_file = open("./report/{}.log".format(str(self.id)), "a+")
-        apt_file = open("./report/{}.apt".format(str(self.id)), "a+")
+        log_file = open("{}/report/{}.log".format(LOCAL_PATH, str(self.id)), "a+")
+        apt_file = open("{}/report/{}.apt".format(LOCAL_PATH, str(self.id)), "a+")
         if event_type == "new_round":
             log_file.write(text.log_new_round(args))
         elif event_type == "add_competitor":
@@ -399,8 +409,12 @@ class Round():
             log_file.write(text.log_add_composite_bet(args[0], args[1], args[2])) # args = (bettor name, amount, beneficiaries names)
             apt_file.write("\n{},{},{}".format(args[0], args[1], args[2][0], args[2][1], args[2][2]))
         elif event_type == "proclaim_winner":
-            log_file.write(text.log_proclaim_winner(args)) # args = list of winners names
-            apt_file.write("\n{},{},{}".format(args[0], args[1], args[2]))
+            if len(args) == 1: # args = list of winners names
+                log_file.write(text.log_proclaim_winner(args[0]))
+                apt_file.write("\n{}".format(args[0]))
+            else:
+                log_file.write(text.log_proclaim_winners(args))
+                apt_file.write("\n{},{},{}".format(args[0], args[1], args[2]))
         elif event_type == "distribute_prize":
             log_file.write(text.log_distribute_prize(args)) # args = report to distribute_prize function
         log_file.close()
@@ -460,6 +474,5 @@ def load_apt(file, npcs_bets, generates_log = False):
         winners.append(simulation.get_competitor_by_name(winner_name))
     simulation.proclaim_winner(winners)
     reply = simulation.distribute_prize(winners)
-    print(reply)
     if(not generates_log):
-        log_file = remove("./report/{}.log".format(str(simulation.id)))
+        log_file = remove("{}/report/{}.log".format(LOCAL_PATH, str(simulation.id)))
